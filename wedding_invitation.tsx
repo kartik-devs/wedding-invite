@@ -3,9 +3,10 @@ import React, { useState, useEffect, useRef } from 'react';
 // --- Assets & Icons ---
 import { MapPin, Calendar, Clock, ChevronRight, Heart, ExternalLink, Volume2, VolumeX } from 'lucide-react';
 
-// --- Video Assets ---
+// --- Video & Audio Assets ---
 const PORTRAIT_VIDEO = "./gemini_generated_video_87da8ed6.mp4";
 const LANDSCAPE_VIDEO = "./gemini_generated_video_59f518db.mp4";
+const MANTRA_AUDIO = "./ganesha_mantra.mp3";
 
 // --- Styling Injection ---
 const customStyles = `
@@ -376,16 +377,19 @@ const Countdown = ({ targetDate }) => {
 export default function App() {
   const [hasStarted, setHasStarted] = useState(false);
   const [introStage, setIntroStage] = useState<'idle' | 'playing' | 'fading_to_white' | 'revealing_ui' | 'done'>('idle');
+  const [showCard, setShowCard] = useState(false);
+  const [isPlayingMantra, setIsPlayingMantra] = useState(false);
+
   const [isPortrait, setIsPortrait] = useState(() => {
     if (typeof window !== 'undefined') {
       return window.matchMedia ? window.matchMedia('(orientation: portrait)').matches : window.innerHeight > window.innerWidth;
     }
     return false;
   });
-  const [isMuted, setIsMuted] = useState(false);
 
   const portraitVideoRef = useRef<HTMLVideoElement | null>(null);
   const landscapeVideoRef = useRef<HTMLVideoElement | null>(null);
+  const mantraAudioRef = useRef<HTMLAudioElement | null>(null);
 
   const [rsvpData, setRsvpData] = useState({ name: '', guests: 1, events: [] });
   const [wishData, setWishData] = useState({ name: '', message: '' });
@@ -396,6 +400,14 @@ export default function App() {
     styleSheet.innerText = customStyles;
     document.head.appendChild(styleSheet);
     return () => { document.head.removeChild(styleSheet); }
+  }, []);
+
+  // Show Lord Ganesha alone for the first 2 seconds, then smoothly reveal the invitation card
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowCard(true);
+    }, 2000);
+    return () => clearTimeout(timer);
   }, []);
 
   // Track orientation changes
@@ -423,7 +435,7 @@ export default function App() {
     };
   }, []);
 
-  // Sync playback time and state if orientation changes while playing
+  // Sync playback time if orientation changes while playing
   useEffect(() => {
     if (introStage === 'playing') {
       const activeVideo = isPortrait ? portraitVideoRef.current : landscapeVideoRef.current;
@@ -432,11 +444,11 @@ export default function App() {
         const currentTime = prevVideo.currentTime;
         prevVideo.pause();
         activeVideo.currentTime = currentTime;
-        activeVideo.muted = isMuted;
+        activeVideo.muted = true;
         activeVideo.play().catch(() => {});
       }
     }
-  }, [isPortrait, introStage, isMuted]);
+  }, [isPortrait, introStage]);
 
   // Force render first frame on load
   const handleLoadedMetadata = (e: React.SyntheticEvent<HTMLVideoElement>) => {
@@ -446,21 +458,27 @@ export default function App() {
     }
   };
 
-  // Start video on Click, Tap or Enter
+  // Start video and Ganesha Mantra on Click, Tap or Enter
   const handleStartIntro = () => {
     if (introStage !== 'idle') return;
     setIntroStage('playing');
 
+    // Start background Ganesha Mantra
+    if (mantraAudioRef.current) {
+      mantraAudioRef.current.volume = 0.7;
+      mantraAudioRef.current.play().then(() => {
+        setIsPlayingMantra(true);
+      }).catch((err) => {
+        console.warn("Mantra playback waiting for user interaction:", err);
+      });
+    }
+
+    // Play active video (muted so mantra is the clear, sacred soundtrack)
     const activeVideo = isPortrait ? portraitVideoRef.current : landscapeVideoRef.current;
     if (activeVideo) {
-      activeVideo.muted = isMuted;
+      activeVideo.muted = true;
       activeVideo.currentTime = 0;
-      activeVideo.play().catch((err) => {
-        console.warn("Unmuted autoplay restricted, continuing muted:", err);
-        activeVideo.muted = true;
-        setIsMuted(true);
-        activeVideo.play().catch(() => {});
-      });
+      activeVideo.play().catch(() => {});
     }
   };
 
@@ -471,7 +489,6 @@ export default function App() {
 
     // Fade to solid white over 800ms
     setTimeout(() => {
-      // Screen is now 100% pure white
       setHasStarted(true);
       window.scrollTo(0, 0);
 
@@ -480,7 +497,6 @@ export default function App() {
 
       setIntroStage('revealing_ui');
 
-      // Fade out from white to unveil the main UI
       setTimeout(() => {
         setIntroStage('done');
       }, 800);
@@ -489,7 +505,6 @@ export default function App() {
 
   const handleTimeUpdate = (e: React.SyntheticEvent<HTMLVideoElement>) => {
     const vid = e.currentTarget;
-    // When video is within last 0.35s, trigger seamless transition to white
     if (vid.duration && vid.currentTime >= vid.duration - 0.35) {
       triggerWhiteTransition();
     }
@@ -515,14 +530,19 @@ export default function App() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [introStage, isPortrait, isMuted]);
+  }, [introStage, isPortrait]);
 
-  const toggleMute = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    const newMuted = !isMuted;
-    setIsMuted(newMuted);
-    if (portraitVideoRef.current) portraitVideoRef.current.muted = newMuted;
-    if (landscapeVideoRef.current) landscapeVideoRef.current.muted = newMuted;
+  const toggleMantra = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    if (!mantraAudioRef.current) return;
+    if (isPlayingMantra) {
+      mantraAudioRef.current.pause();
+      setIsPlayingMantra(false);
+    } else {
+      mantraAudioRef.current.play().then(() => {
+        setIsPlayingMantra(true);
+      }).catch(() => {});
+    }
   };
 
   const toggleEvent = (eventName) => {
@@ -552,6 +572,50 @@ export default function App() {
     <div className={`relative min-h-screen ${!hasStarted ? 'h-screen overflow-hidden' : ''}`}>
       <Petals />
 
+      {/* --- Ganesha Mantra Audio Background --- */}
+      <audio
+        ref={mantraAudioRef}
+        src={MANTRA_AUDIO}
+        loop
+        preload="auto"
+      />
+
+      {/* --- Floating Mantra Audio Controller (Persistent across Intro and Main UI) --- */}
+      <div className="fixed top-5 right-5 z-50 flex items-center gap-2">
+        <button
+          type="button"
+          onClick={toggleMantra}
+          className="group flex items-center gap-2 bg-[#8B1E28]/90 hover:bg-[#8B1E28] text-white px-3.5 py-2 rounded-full border border-[#C4A47C]/60 shadow-lg backdrop-blur-md transition-all duration-300 cursor-pointer"
+          title={isPlayingMantra ? "Pause Ganesha Mantra" : "Play Ganesha Mantra"}
+        >
+          {isPlayingMantra ? (
+            <>
+              <Volume2 className="w-4 h-4 text-[#EAE0D5] animate-pulse" />
+              <span className="text-[11px] uppercase tracking-widest font-sans pr-1 hidden sm:inline text-[#EAE0D5]">Mantra On</span>
+            </>
+          ) : (
+            <>
+              <VolumeX className="w-4 h-4 text-white/70" />
+              <span className="text-[11px] uppercase tracking-widest font-sans pr-1 hidden sm:inline text-white/80">Play Mantra</span>
+            </>
+          )}
+        </button>
+
+        {introStage === 'playing' && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              triggerWhiteTransition();
+            }}
+            className="bg-black/50 hover:bg-black/80 backdrop-blur-md text-white text-xs uppercase tracking-widest px-4 py-2 rounded-full border border-white/20 transition-all flex items-center gap-1.5 cursor-pointer"
+          >
+            <span>Skip</span>
+            <ChevronRight className="w-3.5 h-3.5" />
+          </button>
+        )}
+      </div>
+
       {/* --- Intro Video Section (First Frame -> Play on Click/Tap/Enter -> White Transition) --- */}
       {introStage !== 'done' && (
         <div 
@@ -566,7 +630,7 @@ export default function App() {
             src={PORTRAIT_VIDEO}
             preload="auto"
             playsInline
-            muted={introStage === 'idle' ? true : isMuted}
+            muted
             onLoadedMetadata={handleLoadedMetadata}
             onEnded={handleVideoEnded}
             onTimeUpdate={handleTimeUpdate}
@@ -581,7 +645,7 @@ export default function App() {
             src={LANDSCAPE_VIDEO}
             preload="auto"
             playsInline
-            muted={introStage === 'idle' ? true : isMuted}
+            muted
             onLoadedMetadata={handleLoadedMetadata}
             onEnded={handleVideoEnded}
             onTimeUpdate={handleTimeUpdate}
@@ -590,17 +654,19 @@ export default function App() {
             }`}
           />
 
-          {/* Dark Vignette Overlay on Idle (fades out as video starts playing) */}
+          {/* Dark Vignette Overlay on Idle (starts hidden for 2s so Ganesha is fully seen, then fades in) */}
           <div 
-            className={`absolute inset-0 z-20 bg-gradient-to-b from-black/50 via-black/25 to-black/60 transition-opacity duration-700 ${
-              introStage === 'idle' ? 'opacity-100' : 'opacity-0 pointer-events-none'
+            className={`absolute inset-0 z-20 bg-gradient-to-b from-black/55 via-black/25 to-black/65 transition-opacity duration-1000 ${
+              introStage === 'idle' && showCard ? 'opacity-100' : 'opacity-0 pointer-events-none'
             }`}
           />
 
-          {/* Hero Content on Idle State */}
+          {/* Hero Content on Idle State (Waits 2s so Ganesha is seen alone first, then glides in) */}
           <div 
-            className={`relative z-20 text-center p-6 md:p-10 max-w-xl mx-4 bg-black/25 backdrop-blur-[2px] rounded-2xl border border-white/20 transition-all duration-700 transform ${
-              introStage === 'idle' ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 translate-y-4 pointer-events-none'
+            className={`relative z-20 text-center p-6 md:p-10 max-w-xl mx-4 bg-black/30 backdrop-blur-[2px] rounded-2xl border border-white/20 transition-all duration-1000 transform ${
+              introStage === 'idle' && showCard 
+                ? 'opacity-100 scale-100 translate-y-0' 
+                : 'opacity-0 scale-95 translate-y-4 pointer-events-none'
             }`}
           >
             <p className="text-[#FDFBF7] tracking-[0.3em] text-xs md:text-sm mb-3 uppercase">A Celebration of Love</p>
@@ -624,32 +690,6 @@ export default function App() {
               <kbd className="px-2 py-0.5 rounded bg-white/15 border border-white/30 text-[11px] font-mono text-white">Enter ↵</kbd>
             </div>
           </div>
-
-          {/* Playing Controls (Sound toggle & Skip button) */}
-          {introStage === 'playing' && (
-            <div className="absolute top-6 right-6 z-30 flex items-center gap-3">
-              <button
-                type="button"
-                onClick={toggleMute}
-                className="bg-black/40 hover:bg-black/70 backdrop-blur-md text-white p-2.5 rounded-full border border-white/20 transition-all"
-                title={isMuted ? "Unmute sound" : "Mute sound"}
-              >
-                {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
-              </button>
-
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  triggerWhiteTransition();
-                }}
-                className="bg-black/40 hover:bg-black/70 backdrop-blur-md text-white text-xs uppercase tracking-widest px-4 py-2.5 rounded-full border border-white/20 transition-all flex items-center gap-1.5"
-              >
-                <span>Skip</span>
-                <ChevronRight className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          )}
         </div>
       )}
 
