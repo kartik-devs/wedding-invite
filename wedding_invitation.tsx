@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 
 // --- Assets & Icons ---
-import { MapPin, Calendar, Clock, ChevronRight, Heart, ExternalLink, Volume2, VolumeX } from 'lucide-react';
+import { MapPin, Calendar, Clock, ChevronRight, Heart, ExternalLink, Volume2, VolumeX, Check, Mail, Send } from 'lucide-react';
+
+// --- Recipient Email for RSVP & Wishes ---
+const RECIPIENT_EMAIL = "kartik711111@gmail.com";
 
 // --- Video & Audio Assets ---
 const PORTRAIT_VIDEO = "./gemini_generated_video_87da8ed6.mp4";
@@ -144,6 +147,20 @@ const customStyles = `
       transform: scale(1.03);
       box-shadow: 0 0 20px 4px rgba(196, 164, 124, 0.6);
     }
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .animate-fade-in {
+    animation: fadeIn 0.45s ease-out forwards;
   }
 `;
 
@@ -391,8 +408,12 @@ export default function App() {
   const landscapeVideoRef = useRef<HTMLVideoElement | null>(null);
   const mantraAudioRef = useRef<HTMLAudioElement | null>(null);
 
-  const [rsvpData, setRsvpData] = useState({ name: '', guests: 1, events: [] });
+  const [rsvpData, setRsvpData] = useState({ name: '', guests: 1, events: ['The Wedding'] });
   const [wishData, setWishData] = useState({ name: '', message: '' });
+  const [rsvpSubmitted, setRsvpSubmitted] = useState(false);
+  const [wishSubmitted, setWishSubmitted] = useState(false);
+  const [isSendingRsvp, setIsSendingRsvp] = useState(false);
+  const [isSendingWish, setIsSendingWish] = useState(false);
 
   // Add styles to head
   useEffect(() => {
@@ -555,18 +576,90 @@ export default function App() {
     }));
   };
 
-  const handleRsvpSubmit = (e) => {
+  const handleRsvpSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("RSVP Submitted:", rsvpData);
-    alert("Thank you for your RSVP!");
-    setRsvpData({ name: '', guests: 1, events: [] });
+    if (!rsvpData.name.trim()) {
+      alert("Please enter your name.");
+      return;
+    }
+
+    setIsSendingRsvp(true);
+    const eventsList = rsvpData.events.length > 0 ? rsvpData.events.join(", ") : "The Wedding";
+    const now = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+
+    // 1. Background notification via FormSubmit
+    fetch(`https://formsubmit.co/ajax/${RECIPIENT_EMAIL}`, {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        _subject: `Wedding RSVP: ${rsvpData.name} (${rsvpData.guests} Guest${rsvpData.guests > 1 ? 's' : ''})`,
+        Guest_Name: rsvpData.name,
+        Number_of_Guests: rsvpData.guests,
+        Events_Attending: eventsList,
+        Submitted_At: now
+      })
+    }).catch((err) => {
+      console.log("Background RSVP notification:", err);
+    });
+
+    // 2. Direct email client trigger via mailto:
+    const emailSubject = encodeURIComponent(`Wedding RSVP: ${rsvpData.name}`);
+    const emailBody = encodeURIComponent(
+      `Dear Kartik & Karishma,\n\nI am delighted to RSVP for your wedding celebrations!\n\n` +
+      `• Guest Name: ${rsvpData.name}\n` +
+      `• Number of Guests: ${rsvpData.guests}\n` +
+      `• Events Attending: ${eventsList}\n\n` +
+      `Looking forward to celebrating with you!\n\nWarm regards,\n${rsvpData.name}`
+    );
+
+    window.location.href = `mailto:${RECIPIENT_EMAIL}?subject=${emailSubject}&body=${emailBody}`;
+
+    setRsvpSubmitted(true);
+    setIsSendingRsvp(false);
   };
 
-  const handleWishSubmit = (e) => {
+  const handleWishSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Wish Submitted:", wishData);
-    alert("Your wish has been saved!");
-    setWishData({ name: '', message: '' });
+    if (!wishData.name.trim() || !wishData.message.trim()) {
+      alert("Please enter both your name and wish message.");
+      return;
+    }
+
+    setIsSendingWish(true);
+    const now = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+
+    // 1. Background notification via FormSubmit
+    fetch(`https://formsubmit.co/ajax/${RECIPIENT_EMAIL}`, {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        _subject: `New Wedding Wish from ${wishData.name}! ❤️`,
+        Name: wishData.name,
+        Blessing_Wish: wishData.message,
+        Submitted_At: now
+      })
+    }).catch((err) => {
+      console.log("Background wish notification:", err);
+    });
+
+    // 2. Direct email client trigger via mailto:
+    const emailSubject = encodeURIComponent(`Wedding Wish from ${wishData.name}`);
+    const emailBody = encodeURIComponent(
+      `Dear Kartik & Karishma,\n\nHere is my blessing and wish for your wedding:\n\n` +
+      `"${wishData.message}"\n\n` +
+      `With lots of love and best wishes,\n${wishData.name}`
+    );
+
+    window.location.href = `mailto:${RECIPIENT_EMAIL}?subject=${emailSubject}&body=${emailBody}`;
+
+    setWishSubmitted(true);
+    setIsSendingWish(false);
   };
 
   return (
@@ -874,46 +967,124 @@ export default function App() {
                   
                   <h3 className="text-3xl md:text-4xl text-[#8B1E28] mb-8 font-serif uppercase tracking-widest text-center">RSVP</h3>
                   
-                  <form onSubmit={handleRsvpSubmit}>
-                    <div className="mb-8">
-                      <label className="block text-xs uppercase tracking-widest text-[#666] mb-2 font-semibold">Full Name</label>
-                      <input 
-                        type="text" 
-                        required
-                        className="custom-input w-full text-lg py-2" 
-                        placeholder="Your full name"
-                        value={rsvpData.name}
-                        onChange={(e) => setRsvpData({...rsvpData, name: e.target.value})}
-                      />
-                    </div>
-                    
-                    <div className="mb-8">
-                      <label className="block text-xs uppercase tracking-widest text-[#666] mb-2 font-semibold">Number of Guests</label>
-                      <div className="flex items-center border border-[#EAE0D5] rounded-xl w-fit bg-white overflow-hidden shadow-sm">
-                        <button type="button" onClick={() => setRsvpData(p => ({...p, guests: Math.max(1, p.guests - 1)}))} className="px-5 py-3 text-[#888] hover:bg-[#F5EEDC] transition text-lg font-bold">-</button>
-                        <span className="px-5 py-3 border-x border-[#EAE0D5] w-14 text-center font-serif text-lg font-bold">{rsvpData.guests}</span>
-                        <button type="button" onClick={() => setRsvpData(p => ({...p, guests: p.guests + 1}))} className="px-5 py-3 text-[#888] hover:bg-[#F5EEDC] transition text-lg font-bold">+</button>
+                  {rsvpSubmitted ? (
+                    <div className="text-center py-6 px-4 space-y-5 animate-fade-in">
+                      <div className="w-16 h-16 bg-[#8B1E28]/10 text-[#8B1E28] rounded-full flex items-center justify-center mx-auto border border-[#C4A47C]/40">
+                        <Check className="w-8 h-8 stroke-current" />
                       </div>
-                    </div>
-
-                    <div className="mb-10">
-                      <label className="block text-xs uppercase tracking-widest text-[#666] mb-4 font-semibold">Events Attending</label>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                        {['The Wedding', 'Sandh', 'Uptan', 'Kirtan', 'Lady Sangeet'].map(event => (
-                          <label key={event} className="flex items-center space-x-3 cursor-pointer group p-3 rounded-xl border border-[#C4A47C]/30 bg-white hover:border-[#8B1E28] transition-colors shadow-sm">
-                            <div className={`w-5 h-5 border flex items-center justify-center rounded transition-colors ${rsvpData.events.includes(event) ? 'bg-[#8B1E28] border-[#8B1E28]' : 'border-[#C4A47C] group-hover:border-[#8B1E28]'}`}>
-                              {rsvpData.events.includes(event) && <div className="w-2.5 h-2.5 bg-white rounded-sm"></div>}
-                            </div>
-                            <span className="text-base text-[#444] group-hover:text-[#8B1E28] transition-colors font-serif">{event}</span>
-                          </label>
-                        ))}
+                      <h4 className="font-serif text-3xl font-bold text-[#2B1B17]">RSVP Confirmed!</h4>
+                      <p className="text-base md:text-lg text-[#555] font-serif max-w-lg mx-auto">
+                        Thank you, <span className="font-semibold text-[#8B1E28]">{rsvpData.name}</span>! Your attendance for <span className="font-semibold text-[#8B1E28]">{rsvpData.guests} guest{rsvpData.guests > 1 ? 's' : ''}</span> has been confirmed.
+                      </p>
+                      <div className="bg-white/80 p-4 rounded-xl border border-[#C4A47C]/30 text-left max-w-md mx-auto text-sm space-y-1 text-[#444] font-serif">
+                        <p><strong className="text-[#8B1E28]">Guest:</strong> {rsvpData.name}</p>
+                        <p><strong className="text-[#8B1E28]">Guests:</strong> {rsvpData.guests}</p>
+                        <p><strong className="text-[#8B1E28]">Events:</strong> {rsvpData.events.join(", ") || "The Wedding"}</p>
                       </div>
-                    </div>
+                      <p className="text-xs text-[#888] font-sans tracking-wide">
+                        An email notification has been dispatched to <strong className="text-[#8B1E28] font-mono">{RECIPIENT_EMAIL}</strong>.
+                      </p>
+                      
+                      <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+                        <a 
+                          href={`mailto:${RECIPIENT_EMAIL}?subject=${encodeURIComponent(`Wedding RSVP: ${rsvpData.name}`)}&body=${encodeURIComponent(
+                            `Wedding RSVP Details:\n\n• Guest Name: ${rsvpData.name}\n• Number of Guests: ${rsvpData.guests}\n• Events Attending: ${rsvpData.events.join(", ") || 'The Wedding'}\n\nWarm regards,\n${rsvpData.name}`
+                          )}`}
+                          className="inline-flex items-center gap-2 bg-[#8B1E28] text-white px-5 py-2.5 rounded-xl text-xs md:text-sm font-sans tracking-wider uppercase font-semibold shadow hover:bg-[#6a151d] transition"
+                        >
+                          <Mail className="w-4 h-4" />
+                          <span>Open in Mail App</span>
+                        </a>
+                        <a 
+                          href={`https://mail.google.com/mail/?view=cm&fs=1&to=${RECIPIENT_EMAIL}&su=${encodeURIComponent(`Wedding RSVP: ${rsvpData.name}`)}&body=${encodeURIComponent(
+                            `Wedding RSVP Details:\n\n• Guest Name: ${rsvpData.name}\n• Number of Guests: ${rsvpData.guests}\n• Events Attending: ${rsvpData.events.join(", ") || 'The Wedding'}\n\nWarm regards,\n${rsvpData.name}`
+                          )}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 bg-white text-[#8B1E28] border border-[#8B1E28] px-5 py-2.5 rounded-xl text-xs md:text-sm font-sans tracking-wider uppercase font-semibold shadow-sm hover:bg-[#FAF6F0] transition"
+                        >
+                          <ExternalLink className="w-4 h-4" />
+                          <span>Send via Gmail Web</span>
+                        </a>
+                      </div>
 
-                    <button type="submit" className="w-full bg-[#8B1E28] text-white py-4 md:py-5 rounded-2xl uppercase tracking-[0.25em] text-sm md:text-base font-semibold hover:bg-[#6a151d] transition-colors shadow-lg cursor-pointer">
-                      Confirm Attendance
-                    </button>
-                  </form>
+                      <button 
+                        type="button" 
+                        onClick={() => { setRsvpSubmitted(false); setRsvpData({ name: '', guests: 1, events: ['The Wedding'] }); }}
+                        className="text-xs text-[#888] underline hover:text-[#8B1E28] pt-2 cursor-pointer font-sans block mx-auto"
+                      >
+                        Submit another RSVP
+                      </button>
+                    </div>
+                  ) : (
+                    <form onSubmit={handleRsvpSubmit}>
+                      <div className="mb-8">
+                        <label className="block text-xs uppercase tracking-widest text-[#666] mb-2 font-semibold">Full Name</label>
+                        <input 
+                          type="text" 
+                          required
+                          className="custom-input w-full text-lg py-2" 
+                          placeholder="Your full name"
+                          value={rsvpData.name}
+                          onChange={(e) => setRsvpData({...rsvpData, name: e.target.value})}
+                        />
+                      </div>
+                      
+                      <div className="mb-8">
+                        <label className="block text-xs uppercase tracking-widest text-[#666] mb-2 font-semibold">Number of Guests</label>
+                        <div className="flex items-center border border-[#EAE0D5] rounded-xl w-fit bg-white overflow-hidden shadow-sm">
+                          <button type="button" onClick={() => setRsvpData(p => ({...p, guests: Math.max(1, p.guests - 1)}))} className="px-5 py-3 text-[#888] hover:bg-[#F5EEDC] transition text-lg font-bold">-</button>
+                          <span className="px-5 py-3 border-x border-[#EAE0D5] w-14 text-center font-serif text-lg font-bold">{rsvpData.guests}</span>
+                          <button type="button" onClick={() => setRsvpData(p => ({...p, guests: p.guests + 1}))} className="px-5 py-3 text-[#888] hover:bg-[#F5EEDC] transition text-lg font-bold">+</button>
+                        </div>
+                      </div>
+
+                      <div className="mb-10">
+                        <label className="block text-xs uppercase tracking-widest text-[#666] mb-4 font-semibold">
+                          Events Attending <span className="text-[#888] font-normal lowercase">(click to select)</span>
+                        </label>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5">
+                          {['The Wedding', 'Sandh', 'Uptan', 'Kirtan', 'Lady Sangeet'].map(event => {
+                            const isSelected = rsvpData.events.includes(event);
+                            return (
+                              <button
+                                type="button"
+                                key={event}
+                                onClick={() => toggleEvent(event)}
+                                className={`flex items-center space-x-3.5 p-3.5 rounded-xl border transition-all text-left shadow-sm cursor-pointer select-none ${
+                                  isSelected 
+                                    ? 'border-[#8B1E28] bg-[#8B1E28]/10 text-[#8B1E28]' 
+                                    : 'border-[#C4A47C]/40 bg-white text-[#444] hover:border-[#8B1E28]/50 hover:bg-[#FDFBF7]'
+                                }`}
+                              >
+                                <div className={`w-5 h-5 rounded border flex items-center justify-center transition-all ${
+                                  isSelected 
+                                    ? 'bg-[#8B1E28] border-[#8B1E28] text-white shadow-sm' 
+                                    : 'border-[#C4A47C] bg-white'
+                                }`}>
+                                  {isSelected && (
+                                    <svg className="w-3.5 h-3.5 stroke-current" viewBox="0 0 24 24" fill="none" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                                      <polyline points="20 6 9 17 4 12" />
+                                    </svg>
+                                  )}
+                                </div>
+                                <span className="text-base font-serif font-medium">{event}</span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      <button 
+                        type="submit" 
+                        disabled={isSendingRsvp}
+                        className="w-full bg-[#8B1E28] text-white py-4 md:py-5 rounded-2xl uppercase tracking-[0.25em] text-sm md:text-base font-semibold hover:bg-[#6a151d] transition-colors shadow-lg cursor-pointer flex items-center justify-center gap-2"
+                      >
+                        <Send className="w-4 h-4" />
+                        <span>Confirm Attendance &amp; Send RSVP</span>
+                      </button>
+                    </form>
+                  )}
                </div>
             </div>
           </section>
@@ -926,32 +1097,81 @@ export default function App() {
               <p className="italic text-base md:text-lg text-[#666] font-serif">Be the first to leave a little wish for the couple.</p>
             </div>
 
-            <form onSubmit={handleWishSubmit} className="space-y-6 bg-white p-8 md:p-12 rounded-3xl shadow-lg border border-[#EAE0D5]">
-              <div>
-                <label className="block text-xs uppercase tracking-widest text-[#666] mb-2 font-semibold">Your Name</label>
-                <input 
-                  type="text" required
-                  className="custom-input w-full text-lg py-2"
-                  placeholder="Your name"
-                  value={wishData.name}
-                  onChange={(e) => setWishData({...wishData, name: e.target.value})}
-                />
+            {wishSubmitted ? (
+              <div className="text-center py-8 px-6 space-y-5 bg-white p-8 md:p-12 rounded-3xl shadow-lg border border-[#EAE0D5] animate-fade-in">
+                <div className="w-16 h-16 bg-[#8B1E28]/10 text-[#8B1E28] rounded-full flex items-center justify-center mx-auto border border-[#C4A47C]/40">
+                  <Heart className="w-8 h-8 fill-current text-[#8B1E28]" />
+                </div>
+                <h4 className="font-serif text-3xl font-bold text-[#2B1B17]">Wish Received with Love!</h4>
+                <p className="text-base md:text-lg text-[#555] font-serif max-w-lg mx-auto">
+                  Thank you, <span className="font-semibold text-[#8B1E28]">{wishData.name}</span>! Your blessing has been recorded and an email notification has been dispatched to Kartik &amp; Karishma.
+                </p>
+                <div className="bg-[#FAF6F0] p-4 rounded-xl border border-[#C4A47C]/30 text-left max-w-md mx-auto text-sm text-[#444] font-serif italic">
+                  "{wishData.message}"
+                </div>
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+                  <a 
+                    href={`mailto:${RECIPIENT_EMAIL}?subject=${encodeURIComponent(`Wedding Wish from ${wishData.name}`)}&body=${encodeURIComponent(
+                      `Dear Kartik & Karishma,\n\nHere is my blessing and wish for your wedding:\n\n"${wishData.message}"\n\nWith love,\n${wishData.name}`
+                    )}`}
+                    className="inline-flex items-center gap-2 bg-[#8B1E28] text-white px-5 py-2.5 rounded-xl text-xs md:text-sm font-sans tracking-wider uppercase font-semibold shadow hover:bg-[#6a151d] transition"
+                  >
+                    <Mail className="w-4 h-4" />
+                    <span>Open in Mail App</span>
+                  </a>
+                  <a 
+                    href={`https://mail.google.com/mail/?view=cm&fs=1&to=${RECIPIENT_EMAIL}&su=${encodeURIComponent(`Wedding Wish from ${wishData.name}`)}&body=${encodeURIComponent(
+                      `Dear Kartik & Karishma,\n\nHere is my blessing and wish for your wedding:\n\n"${wishData.message}"\n\nWith love,\n${wishData.name}`
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 bg-white text-[#8B1E28] border border-[#8B1E28] px-5 py-2.5 rounded-xl text-xs md:text-sm font-sans tracking-wider uppercase font-semibold shadow-sm hover:bg-[#FAF6F0] transition"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                    <span>Send via Gmail Web</span>
+                  </a>
+                </div>
+                <button 
+                  type="button" 
+                  onClick={() => { setWishSubmitted(false); setWishData({ name: '', message: '' }); }}
+                  className="text-xs text-[#888] underline hover:text-[#8B1E28] pt-2 cursor-pointer font-sans block mx-auto"
+                >
+                  Leave another wish
+                </button>
               </div>
-              <div>
-                <label className="block text-xs uppercase tracking-widest text-[#666] mb-2 font-semibold">Your Message</label>
-                <textarea 
-                  required rows="3"
-                  className="custom-input w-full resize-none text-lg py-2"
-                  placeholder="Write your heartfelt blessing or wish..."
-                  value={wishData.message}
-                  onChange={(e) => setWishData({...wishData, message: e.target.value})}
-                ></textarea>
-                <div className="text-right text-xs text-[#888] mt-1">{wishData.message.length}/200</div>
-              </div>
-              <button type="submit" className="w-full bg-[#8B1E28]/95 text-white py-4 rounded-2xl uppercase tracking-[0.2em] text-sm md:text-base hover:bg-[#8B1E28] transition-colors flex items-center justify-center shadow-md cursor-pointer font-semibold">
-                <span>Save Your Wish</span> <Heart className="w-4 h-4 ml-2 fill-current" />
-              </button>
-            </form>
+            ) : (
+              <form onSubmit={handleWishSubmit} className="space-y-6 bg-white p-8 md:p-12 rounded-3xl shadow-lg border border-[#EAE0D5]">
+                <div>
+                  <label className="block text-xs uppercase tracking-widest text-[#666] mb-2 font-semibold">Your Name</label>
+                  <input 
+                    type="text" required
+                    className="custom-input w-full text-lg py-2"
+                    placeholder="Your name"
+                    value={wishData.name}
+                    onChange={(e) => setWishData({...wishData, name: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs uppercase tracking-widest text-[#666] mb-2 font-semibold">Your Message</label>
+                  <textarea 
+                    required rows="3"
+                    className="custom-input w-full resize-none text-lg py-2"
+                    placeholder="Write your heartfelt blessing or wish..."
+                    value={wishData.message}
+                    onChange={(e) => setWishData({...wishData, message: e.target.value})}
+                  ></textarea>
+                  <div className="text-right text-xs text-[#888] mt-1">{wishData.message.length}/200</div>
+                </div>
+                <button 
+                  type="submit" 
+                  disabled={isSendingWish}
+                  className="w-full bg-[#8B1E28]/95 text-white py-4 rounded-2xl uppercase tracking-[0.2em] text-sm md:text-base hover:bg-[#8B1E28] transition-colors flex items-center justify-center gap-2 shadow-md cursor-pointer font-semibold"
+                >
+                  <Send className="w-4 h-4" />
+                  <span>Save &amp; Send Your Wish</span> <Heart className="w-4 h-4 ml-1 fill-current" />
+                </button>
+              </form>
+            )}
           </section>
 
           {/* Section: Thank You Footer */}
