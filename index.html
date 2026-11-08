@@ -4,6 +4,21 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Kartik &amp; Karishma Wedding Invitation</title>
+  <meta name="description" content="Together with our families, we joyfully invite you to celebrate the wedding of Kartik &amp; Karishma on 13th November 2026." />
+  <meta name="theme-color" content="#8B1E28" />
+
+  <!-- Open Graph / WhatsApp / Social Share -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://kartik-devs.github.io/wedding-invite/" />
+  <meta property="og:title" content="Kartik &amp; Karishma — Wedding Invitation" />
+  <meta property="og:description" content="Together with our families, we joyfully invite you to celebrate our wedding on 13th November 2026." />
+  <meta property="og:image" content="https://kartik-devs.github.io/wedding-invite/preview.jpg" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Kartik &amp; Karishma — Wedding Invitation" />
+  <meta name="twitter:description" content="Together with our families, we joyfully invite you to celebrate our wedding on 13th November 2026." />
+  <meta name="twitter:image" content="https://kartik-devs.github.io/wedding-invite/preview.jpg" />
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Fonts -->
@@ -444,6 +459,7 @@
         const activeVideo = isPortrait ? portraitVideoRef.current : landscapeVideoRef.current;
         if (activeVideo) {
           activeVideo.muted = true;
+          activeVideo.volume = 0;
           activeVideo.currentTime = 0;
           activeVideo.play().catch(() => {});
         }

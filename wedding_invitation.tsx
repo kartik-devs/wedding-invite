@@ -477,6 +477,7 @@ export default function App() {
     const activeVideo = isPortrait ? portraitVideoRef.current : landscapeVideoRef.current;
     if (activeVideo) {
       activeVideo.muted = true;
+      activeVideo.volume = 0;
       activeVideo.currentTime = 0;
       activeVideo.play().catch(() => {});
     }
