@@ -150,12 +150,12 @@ const customStyles = `
 // --- Components ---
 
 const OrnateDivider = () => (
-  <div className="flex justify-center items-center my-8 opacity-80">
-    <svg width="200" height="40" viewBox="0 0 200 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M10 20 L50 20 M150 20 L190 20" stroke="#C4A47C" strokeWidth="1" />
-      <circle cx="100" cy="20" r="4" fill="#8B1E28" />
-      <path d="M85 20 Q92.5 10 100 20 Q107.5 30 115 20" stroke="#C4A47C" strokeWidth="1" fill="none" />
-      <path d="M85 20 Q92.5 30 100 20 Q107.5 10 115 20" stroke="#C4A47C" strokeWidth="1" fill="none" />
+  <div className="flex justify-center items-center my-6 md:my-8 opacity-85">
+    <svg width="280" height="40" viewBox="0 0 280 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M15 20 L80 20 M200 20 L265 20" stroke="#C4A47C" strokeWidth="1.5" />
+      <circle cx="140" cy="20" r="5" fill="#8B1E28" />
+      <path d="M115 20 Q127.5 8 140 20 Q152.5 32 165 20" stroke="#C4A47C" strokeWidth="1.5" fill="none" />
+      <path d="M115 20 Q127.5 32 140 20 Q152.5 8 165 20" stroke="#C4A47C" strokeWidth="1.5" fill="none" />
     </svg>
   </div>
 );
@@ -298,14 +298,14 @@ const ScratchCard = ({ revealText }) => {
   return (
     <div 
       ref={containerRef}
-      className="relative w-full max-w-md h-40 mx-auto rounded-lg overflow-hidden shadow-lg select-none"
+      className="relative w-full max-w-xl h-48 sm:h-52 md:h-56 mx-auto rounded-2xl overflow-hidden shadow-xl select-none border-2 border-[#C4A47C]"
       style={{ touchAction: 'none' }} // Crucial for smooth touch scratching
     >
       {/* Revealed Content underneath */}
-      <div className="absolute inset-0 bg-[#F5EEDC] flex flex-col items-center justify-center p-4 text-center border-2 border-[#C4A47C]">
-        <p className="text-sm font-semibold tracking-widest text-[#666] mb-2 uppercase">Friday</p>
-        <p className="text-2xl md:text-3xl text-[#8B1E28] font-bold mb-1">13 November 2026</p>
-        <p className="font-script text-2xl text-[#C4A47C]">Our forever begins</p>
+      <div className="absolute inset-0 bg-[#F5EEDC] flex flex-col items-center justify-center p-6 text-center">
+        <p className="text-xs sm:text-sm md:text-base font-bold tracking-[0.3em] text-[#888] mb-2 uppercase font-sans">Friday</p>
+        <p className="text-3xl sm:text-4xl md:text-5xl text-[#8B1E28] font-serif font-bold mb-2">13 November 2026</p>
+        <p className="font-script text-3xl sm:text-4xl text-[#C4A47C]">Our forever begins</p>
       </div>
 
       {/* Canvas on top */}
@@ -352,18 +352,18 @@ const Countdown = ({ targetDate }) => {
   });
 
   const TimeBox = ({ value, label }) => (
-    <div className="flex flex-col items-center mx-1 md:mx-3">
-      <div className="bg-[#8B1E28] text-[#FDFBF7] rounded shadow-md w-14 h-16 md:w-20 md:h-24 flex items-center justify-center relative overflow-hidden border border-[#C4A47C]/30">
+    <div className="flex flex-col items-center mx-2 sm:mx-3 md:mx-5">
+      <div className="bg-[#8B1E28] text-[#FDFBF7] rounded-xl shadow-lg w-16 h-20 sm:w-24 sm:h-28 md:w-32 md:h-36 flex items-center justify-center relative overflow-hidden border border-[#C4A47C]/40">
          {/* Inner highlight line for depth */}
-         <div className="absolute top-1/2 left-0 w-full h-[1px] bg-black/20"></div>
-        <span className="text-2xl md:text-4xl font-semibold z-10">{String(value).padStart(2, '0')}</span>
+         <div className="absolute top-1/2 left-0 w-full h-[1px] bg-black/25"></div>
+        <span className="text-3xl sm:text-4xl md:text-6xl font-serif font-bold z-10">{String(value).padStart(2, '0')}</span>
       </div>
-      <span className="text-[10px] md:text-xs tracking-[0.2em] mt-3 text-[#666] uppercase">{label}</span>
+      <span className="text-xs md:text-sm tracking-[0.25em] mt-3.5 text-[#777] uppercase font-semibold">{label}</span>
     </div>
   );
 
   return (
-    <div className="flex justify-center items-center my-6">
+    <div className="flex justify-center items-center my-8">
       <TimeBox value={timeLeft.days || 0} label="Days" />
       <TimeBox value={timeLeft.hours || 0} label="Hours" />
       <TimeBox value={timeLeft.minutes || 0} label="Minutes" />
@@ -713,143 +713,174 @@ export default function App() {
         <div className="bg-[#FDFBF7] shadow-[0_-20px_50px_rgba(0,0,0,0.1)] relative z-20">
           
           {/* Section: Invitation Details */}
-          <section className="py-20 px-6 max-w-4xl mx-auto text-center">
+          <section className="py-12 md:py-16 px-6 max-w-5xl mx-auto text-center">
             <OrnateDivider />
-            <p className="tracking-widest text-[#666] text-sm uppercase mb-8">Together with our families</p>
-            <h2 className="text-2xl md:text-3xl font-semibold text-[#333] mb-6">We Joyfully Invite You</h2>
-            <p className="italic text-[#666] mb-8">to celebrate the wedding of</p>
+            <p className="tracking-[0.25em] text-[#777] text-sm md:text-base uppercase mb-3 font-sans font-medium">Together with our families</p>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-semibold text-[#2B1B17] mb-3">We Joyfully Invite You</h2>
+            <p className="italic text-lg sm:text-xl md:text-2xl text-[#666] mb-6 font-serif">to celebrate the wedding of</p>
             
-            <div className="flex flex-col items-center justify-center mb-12">
-              <span className="font-script text-5xl md:text-7xl text-[#8B1E28] mb-2">Kartik</span>
-              <span className="text-[#C4A47C] font-script text-3xl my-2">&</span>
-              <span className="font-script text-5xl md:text-7xl text-[#8B1E28] mt-2">Karishma</span>
+            <div className="flex flex-col items-center justify-center my-4 md:my-8">
+              <span className="font-script text-7xl sm:text-8xl md:text-9xl lg:text-[10rem] text-[#8B1E28] leading-tight text-shadow-sm">Kartik</span>
+              <span className="text-[#C4A47C] font-script text-4xl sm:text-5xl md:text-6xl my-1">&</span>
+              <span className="font-script text-7xl sm:text-8xl md:text-9xl lg:text-[10rem] text-[#8B1E28] leading-tight text-shadow-sm">Karishma</span>
             </div>
 
-            <p className="tracking-widest text-[#666] text-xs uppercase mb-8">With the blessings of</p>
-            <div className="flex flex-col md:flex-row justify-center items-start gap-10 md:gap-24 text-[#444] mb-8">
+            <p className="tracking-[0.25em] text-[#8B1E28] text-xs sm:text-sm md:text-base uppercase font-semibold mb-6">With the blessings of</p>
+            
+            {/* Grandparents & Parents Family Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 max-w-5xl mx-auto my-6 text-[#444]">
               {/* Kartik's Family */}
-              <div className="text-center space-y-4">
-                <div>
-                  <p className="text-[10px] tracking-widest uppercase text-[#C4A47C] font-semibold mb-1">Grandparents</p>
-                  <p className="font-semibold text-base mb-0.5">Late Shri Bishan Singh Rana</p>
-                  <p className="text-sm text-[#555]">& Smt. Rama Rana</p>
-                </div>
-                <div className="w-12 h-[1px] bg-[#C4A47C]/30 mx-auto"></div>
-                <div>
-                  <p className="text-[10px] tracking-widest uppercase text-[#C4A47C] font-semibold mb-1">Parents</p>
-                  <p className="font-semibold text-base mb-0.5">Shri Pawan Rana</p>
-                  <p className="text-sm text-[#555]">& Smt. Shivani Rana</p>
+              <div className="bg-[#FAF6F0] p-6 sm:p-8 md:p-10 rounded-2xl shadow-sm border border-[#C4A47C]/40 text-center relative overflow-hidden hover:shadow-md transition-shadow">
+                <div className="absolute top-0 left-0 w-16 h-16 bg-gradient-to-br from-[#C4A47C]/20 to-transparent"></div>
+                <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-[#C4A47C]/20 to-transparent"></div>
+                <span className="inline-block px-4 py-1 rounded-full bg-[#8B1E28]/10 text-[#8B1E28] text-xs uppercase tracking-[0.2em] font-semibold mb-6">Rana Family</span>
+
+                <div className="space-y-6">
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.25em] text-[#C4A47C] font-semibold mb-1.5 font-sans">Grandparents</p>
+                    <p className="font-serif text-xl sm:text-2xl font-bold text-[#2B1B17] mb-1">Late Shri Bishan Singh Rana</p>
+                    <p className="text-base sm:text-lg text-[#666] font-serif">& Smt. Rama Rana</p>
+                  </div>
+
+                  <div className="w-20 h-[1px] bg-[#C4A47C]/40 mx-auto"></div>
+
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.25em] text-[#C4A47C] font-semibold mb-1.5 font-sans">Parents</p>
+                    <p className="font-serif text-xl sm:text-2xl font-bold text-[#2B1B17] mb-1">Shri Pawan Rana</p>
+                    <p className="text-base sm:text-lg text-[#666] font-serif">& Smt. Shivani Rana</p>
+                  </div>
                 </div>
               </div>
 
               {/* Karishma's Family */}
-              <div className="text-center space-y-4">
-                <div>
-                  <p className="text-[10px] tracking-widest uppercase text-[#C4A47C] font-semibold mb-1">Grandparents</p>
-                  <p className="font-semibold text-base mb-0.5">Shri Harish Bhatia</p>
-                  <p className="text-sm text-[#555]">& Smt. Prem Bhatia</p>
-                </div>
-                <div className="w-12 h-[1px] bg-[#C4A47C]/30 mx-auto"></div>
-                <div>
-                  <p className="text-[10px] tracking-widest uppercase text-[#C4A47C] font-semibold mb-1">Parents</p>
-                  <p className="font-semibold text-base mb-0.5">Late Shri Rakesh Bhatia</p>
-                  <p className="text-sm text-[#555]">& Late Smt. Minakshi Bhatia</p>
+              <div className="bg-[#FAF6F0] p-6 sm:p-8 md:p-10 rounded-2xl shadow-sm border border-[#C4A47C]/40 text-center relative overflow-hidden hover:shadow-md transition-shadow">
+                <div className="absolute top-0 left-0 w-16 h-16 bg-gradient-to-br from-[#C4A47C]/20 to-transparent"></div>
+                <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-[#C4A47C]/20 to-transparent"></div>
+                <span className="inline-block px-4 py-1 rounded-full bg-[#8B1E28]/10 text-[#8B1E28] text-xs uppercase tracking-[0.2em] font-semibold mb-6">Bhatia Family</span>
+
+                <div className="space-y-6">
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.25em] text-[#C4A47C] font-semibold mb-1.5 font-sans">Grandparents</p>
+                    <p className="font-serif text-xl sm:text-2xl font-bold text-[#2B1B17] mb-1">Shri Harish Bhatia</p>
+                    <p className="text-base sm:text-lg text-[#666] font-serif">& Smt. Prem Bhatia</p>
+                  </div>
+
+                  <div className="w-20 h-[1px] bg-[#C4A47C]/40 mx-auto"></div>
+
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.25em] text-[#C4A47C] font-semibold mb-1.5 font-sans">Parents</p>
+                    <p className="font-serif text-xl sm:text-2xl font-bold text-[#2B1B17] mb-1">Late Shri Rakesh Bhatia</p>
+                    <p className="text-base sm:text-lg text-[#666] font-serif">& Late Smt. Minakshi Bhatia</p>
+                  </div>
                 </div>
               </div>
             </div>
-            <p className="italic text-[#666]">and our loving families</p>
+
+            <p className="italic text-base sm:text-lg text-[#666] mt-6">and our loving families</p>
             <OrnateDivider />
           </section>
 
           {/* Section: Date Reveal */}
-          <section className="py-16 px-6 bg-[#FAF6F0] text-center border-y border-[#EAE0D5]">
-            <p className="tracking-widest text-[#888] text-xs uppercase mb-2">A Little Secret Awaits</p>
-            <h2 className="font-script text-4xl md:text-5xl text-[#333] mb-4">A date to remember</h2>
-            <p className="text-[#666] mb-10 italic">Scratch the keepsake below to reveal our special day.</p>
-            
-            <ScratchCard />
-            <p className="text-xs text-[#888] mt-6 tracking-wider uppercase">Or wait for the countdown below</p>
+          <section className="py-14 md:py-18 px-6 bg-[#FAF6F0] text-center border-y border-[#EAE0D5]">
+            <div className="max-w-4xl mx-auto">
+              <p className="tracking-[0.25em] text-[#888] text-sm uppercase mb-2 font-medium">A Little Secret Awaits</p>
+              <h2 className="font-script text-5xl md:text-6xl text-[#333] mb-3">A date to remember</h2>
+              <p className="text-[#666] text-base md:text-lg mb-8 italic font-serif">Scratch the keepsake below to reveal our special day.</p>
+              
+              <ScratchCard />
+              <p className="text-xs md:text-sm text-[#888] mt-6 tracking-wider uppercase font-medium">Or wait for the countdown below</p>
+            </div>
           </section>
 
           {/* Section: Countdown */}
-          <section className="py-20 px-6 max-w-4xl mx-auto text-center">
-            <p className="tracking-widest text-[#666] text-xs uppercase mb-4">Every moment brings us closer</p>
-            <h2 className="text-3xl md:text-4xl font-semibold text-[#8B1E28] mb-8">Countdown to Forever</h2>
+          <section className="py-14 md:py-18 px-6 max-w-5xl mx-auto text-center">
+            <p className="tracking-[0.25em] text-[#666] text-sm uppercase mb-3 font-medium">Every moment brings us closer</p>
+            <h2 className="text-4xl sm:text-5xl md:text-6xl font-semibold text-[#8B1E28] mb-8 font-serif">Countdown to Forever</h2>
             <Countdown targetDate="2026-11-13T09:00:00+05:30" />
-            <p className="text-[#666] mt-6 text-sm tracking-wide">13 November 2026 • 9:00 AM IST</p>
+            <p className="text-[#666] mt-8 text-base md:text-lg tracking-wide font-serif font-medium">13 November 2026 • 9:00 AM IST</p>
             <OrnateDivider />
           </section>
 
-          {/* Section: Itinerary */}
-          <section className="py-16 bg-[#FDFBF7] overflow-hidden">
-            <div className="text-center mb-10">
-              <p className="tracking-widest text-[#888] text-xs uppercase mb-2">Celebration Schedule</p>
-              <h2 className="font-script text-5xl text-[#333] mb-2">Wedding Itinerary</h2>
-              <p className="italic text-[#666]">Join us in our joy and rituals.</p>
+          {/* Section: Itinerary (Side by Side 2-Column Desktop Grid) */}
+          <section className="py-14 md:py-18 px-6 bg-[#FDFBF7] overflow-hidden">
+            <div className="text-center mb-12">
+              <p className="tracking-[0.25em] text-[#888] text-sm uppercase mb-2 font-medium">Celebration Schedule</p>
+              <h2 className="font-script text-6xl md:text-7xl text-[#333] mb-3">Wedding Itinerary</h2>
+              <p className="italic text-lg md:text-xl text-[#666] font-serif">Join us in our joy and rituals.</p>
             </div>
             
-            <div className="max-w-2xl mx-auto px-6 space-y-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 max-w-5xl mx-auto">
               {/* Day 1: Thursday */}
-              <div className="relative border-l border-[#C4A47C] pl-6 md:pl-8 ml-4 md:ml-0">
-                <div className="absolute w-4 h-4 bg-[#8B1E28] rounded-full -left-[9px] top-1 border-4 border-[#FDFBF7]"></div>
-                <h3 className="text-2xl text-[#8B1E28] font-serif mb-6">Thursday, 12th November</h3>
+              <div className="bg-[#FAF6F0] p-8 md:p-10 rounded-2xl border border-[#C4A47C]/40 shadow-sm relative overflow-hidden">
+                <div className="flex items-center gap-3 mb-8 border-b border-[#C4A47C]/30 pb-4">
+                  <div className="w-3.5 h-3.5 rounded-full bg-[#8B1E28]"></div>
+                  <h3 className="text-2xl md:text-3xl text-[#8B1E28] font-serif font-semibold">Thursday, 12th November</h3>
+                </div>
                 
-                <div className="space-y-6">
-                  <div className="flex flex-col md:flex-row md:items-baseline gap-1 md:gap-4">
-                    <span className="text-[#C4A47C] font-semibold w-24">4:00 PM</span>
-                    <span className="text-lg text-[#444]">Sandh</span>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between p-3.5 rounded-xl bg-white/70 border border-[#EAE0D5] hover:border-[#8B1E28]/40 transition-colors">
+                    <span className="text-lg md:text-xl font-serif text-[#333]">Sandh</span>
+                    <span className="text-sm md:text-base font-semibold text-[#8B1E28] bg-[#8B1E28]/10 px-3.5 py-1 rounded-full font-sans">4:00 PM</span>
                   </div>
-                  <div className="flex flex-col md:flex-row md:items-baseline gap-1 md:gap-4">
-                    <span className="text-[#C4A47C] font-semibold w-24">5:00 PM</span>
-                    <span className="text-lg text-[#444]">Uptan</span>
+                  <div className="flex items-center justify-between p-3.5 rounded-xl bg-white/70 border border-[#EAE0D5] hover:border-[#8B1E28]/40 transition-colors">
+                    <span className="text-lg md:text-xl font-serif text-[#333]">Uptan</span>
+                    <span className="text-sm md:text-base font-semibold text-[#8B1E28] bg-[#8B1E28]/10 px-3.5 py-1 rounded-full font-sans">5:00 PM</span>
                   </div>
-                  <div className="flex flex-col md:flex-row md:items-baseline gap-1 md:gap-4">
-                    <span className="text-[#C4A47C] font-semibold w-24">7:00 PM</span>
-                    <span className="text-lg text-[#444]">Kirtan</span>
+                  <div className="flex items-center justify-between p-3.5 rounded-xl bg-white/70 border border-[#EAE0D5] hover:border-[#8B1E28]/40 transition-colors">
+                    <span className="text-lg md:text-xl font-serif text-[#333]">Kirtan</span>
+                    <span className="text-sm md:text-base font-semibold text-[#8B1E28] bg-[#8B1E28]/10 px-3.5 py-1 rounded-full font-sans">7:00 PM</span>
                   </div>
-                  <div className="flex flex-col md:flex-row md:items-baseline gap-1 md:gap-4">
-                    <span className="text-[#C4A47C] font-semibold w-24">10:00 PM</span>
-                    <span className="text-lg text-[#444]">Lady Sangeet</span>
+                  <div className="flex items-center justify-between p-3.5 rounded-xl bg-white/70 border border-[#EAE0D5] hover:border-[#8B1E28]/40 transition-colors">
+                    <span className="text-lg md:text-xl font-serif text-[#333]">Lady Sangeet</span>
+                    <span className="text-sm md:text-base font-semibold text-[#8B1E28] bg-[#8B1E28]/10 px-3.5 py-1 rounded-full font-sans">10:00 PM</span>
                   </div>
                 </div>
               </div>
 
               {/* Day 2: Friday */}
-              <div className="relative border-l border-[#C4A47C] pl-6 md:pl-8 ml-4 md:ml-0">
-                <div className="absolute w-4 h-4 bg-[#8B1E28] rounded-full -left-[9px] top-1 border-4 border-[#FDFBF7]"></div>
-                <h3 className="text-2xl text-[#8B1E28] font-serif mb-6">Friday, 13th November</h3>
+              <div className="bg-[#FAF6F0] p-8 md:p-10 rounded-2xl border-2 border-[#8B1E28]/35 shadow-md relative overflow-hidden flex flex-col justify-between">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-[#8B1E28]/15 to-transparent"></div>
                 
-                <div className="space-y-6">
-                  <div className="flex flex-col md:flex-row md:items-baseline gap-1 md:gap-4">
-                    <span className="text-[#C4A47C] font-semibold w-24">9:00 AM</span>
-                    <span className="text-lg font-semibold text-[#8B1E28]">The Wedding</span>
+                <div>
+                  <div className="flex items-center gap-3 mb-8 border-b border-[#C4A47C]/30 pb-4">
+                    <div className="w-3.5 h-3.5 rounded-full bg-[#8B1E28] animate-pulse"></div>
+                    <h3 className="text-2xl md:text-3xl text-[#8B1E28] font-serif font-semibold">Friday, 13th November</h3>
+                  </div>
+                  
+                  <div className="p-6 md:p-8 rounded-2xl bg-gradient-to-br from-[#8B1E28] to-[#6A151D] text-white shadow-lg text-center my-4">
+                    <p className="text-xs uppercase tracking-[0.3em] text-[#EAE0D5] mb-2 font-medium">The Auspicious Wedding</p>
+                    <h4 className="font-script text-5xl md:text-6xl mb-2 text-white text-shadow-sm">The Wedding</h4>
+                    <p className="text-2xl md:text-3xl font-serif font-bold text-[#EAE0D5] mt-3">9:00 AM IST</p>
                   </div>
                 </div>
+
+                <p className="text-center italic text-sm md:text-base text-[#666] font-serif mt-4">
+                  We eagerly await your gracious presence to bless the couple.
+                </p>
               </div>
             </div>
           </section>
 
           {/* Section: RSVP Form */}
-          <section className="py-20 px-6 bg-[#FAF6F0] border-y border-[#EAE0D5]">
-            <div className="max-w-3xl mx-auto">
+          <section className="py-14 md:py-20 px-6 bg-[#FAF6F0] border-y border-[#EAE0D5]">
+            <div className="max-w-4xl mx-auto">
                <div className="text-center mb-12">
-                  <h2 className="text-3xl md:text-4xl font-semibold text-[#333] mb-4">Two Families. One Beautiful Beginning</h2>
-                  <p className="italic text-[#666]">The love that raised us. The blessings that bring us together.</p>
+                  <h2 className="text-3xl sm:text-4xl md:text-5xl font-semibold text-[#333] mb-3 font-serif">Two Families. One Beautiful Beginning</h2>
+                  <p className="italic text-base md:text-lg text-[#666] font-serif">The love that raised us. The blessings that bring us together.</p>
                </div>
                
-               <div className="bg-[#FDFBF7] p-8 md:p-12 rounded-lg shadow-lg border border-[#EAE0D5] relative overflow-hidden">
-                  {/* Decorative corner */}
-                  <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-[#C4A47C]/20 to-transparent"></div>
+               <div className="bg-[#FDFBF7] p-8 md:p-14 rounded-3xl shadow-xl border border-[#EAE0D5] relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-[#C4A47C]/20 to-transparent"></div>
                   
-                  <h3 className="text-3xl text-[#8B1E28] mb-8 font-serif uppercase tracking-widest">RSVP</h3>
+                  <h3 className="text-3xl md:text-4xl text-[#8B1E28] mb-8 font-serif uppercase tracking-widest text-center">RSVP</h3>
                   
                   <form onSubmit={handleRsvpSubmit}>
                     <div className="mb-8">
-                      <label className="block text-xs uppercase tracking-widest text-[#666] mb-2">Full Name</label>
+                      <label className="block text-xs uppercase tracking-widest text-[#666] mb-2 font-semibold">Full Name</label>
                       <input 
                         type="text" 
                         required
-                        className="custom-input w-full" 
+                        className="custom-input w-full text-lg py-2" 
                         placeholder="Your full name"
                         value={rsvpData.name}
                         onChange={(e) => setRsvpData({...rsvpData, name: e.target.value})}
@@ -857,29 +888,29 @@ export default function App() {
                     </div>
                     
                     <div className="mb-8">
-                      <label className="block text-xs uppercase tracking-widest text-[#666] mb-2">Number of Guests</label>
-                      <div className="flex items-center border border-[#EAE0D5] rounded w-fit">
-                        <button type="button" onClick={() => setRsvpData(p => ({...p, guests: Math.max(1, p.guests - 1)}))} className="px-4 py-2 text-[#888] hover:bg-[#F5EEDC] transition">-</button>
-                        <span className="px-4 py-2 border-x border-[#EAE0D5] w-12 text-center">{rsvpData.guests}</span>
-                        <button type="button" onClick={() => setRsvpData(p => ({...p, guests: p.guests + 1}))} className="px-4 py-2 text-[#888] hover:bg-[#F5EEDC] transition">+</button>
+                      <label className="block text-xs uppercase tracking-widest text-[#666] mb-2 font-semibold">Number of Guests</label>
+                      <div className="flex items-center border border-[#EAE0D5] rounded-xl w-fit bg-white overflow-hidden shadow-sm">
+                        <button type="button" onClick={() => setRsvpData(p => ({...p, guests: Math.max(1, p.guests - 1)}))} className="px-5 py-3 text-[#888] hover:bg-[#F5EEDC] transition text-lg font-bold">-</button>
+                        <span className="px-5 py-3 border-x border-[#EAE0D5] w-14 text-center font-serif text-lg font-bold">{rsvpData.guests}</span>
+                        <button type="button" onClick={() => setRsvpData(p => ({...p, guests: p.guests + 1}))} className="px-5 py-3 text-[#888] hover:bg-[#F5EEDC] transition text-lg font-bold">+</button>
                       </div>
                     </div>
 
                     <div className="mb-10">
-                      <label className="block text-xs uppercase tracking-widest text-[#666] mb-4">Events Attending</label>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <label className="block text-xs uppercase tracking-widest text-[#666] mb-4 font-semibold">Events Attending</label>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                         {['The Wedding', 'Sandh', 'Uptan', 'Kirtan', 'Lady Sangeet'].map(event => (
-                          <label key={event} className="flex items-center space-x-3 cursor-pointer group">
-                            <div className={`w-5 h-5 border flex items-center justify-center transition-colors ${rsvpData.events.includes(event) ? 'bg-[#8B1E28] border-[#8B1E28]' : 'border-[#C4A47C] group-hover:border-[#8B1E28]'}`}>
+                          <label key={event} className="flex items-center space-x-3 cursor-pointer group p-3 rounded-xl border border-[#C4A47C]/30 bg-white hover:border-[#8B1E28] transition-colors shadow-sm">
+                            <div className={`w-5 h-5 border flex items-center justify-center rounded transition-colors ${rsvpData.events.includes(event) ? 'bg-[#8B1E28] border-[#8B1E28]' : 'border-[#C4A47C] group-hover:border-[#8B1E28]'}`}>
                               {rsvpData.events.includes(event) && <div className="w-2.5 h-2.5 bg-white rounded-sm"></div>}
                             </div>
-                            <span className="text-sm text-[#444] group-hover:text-[#8B1E28] transition-colors">{event}</span>
+                            <span className="text-base text-[#444] group-hover:text-[#8B1E28] transition-colors font-serif">{event}</span>
                           </label>
                         ))}
                       </div>
                     </div>
 
-                    <button type="submit" className="w-full bg-[#8B1E28] text-white py-4 rounded uppercase tracking-[0.2em] text-sm hover:bg-[#6a151d] transition-colors shadow-md">
+                    <button type="submit" className="w-full bg-[#8B1E28] text-white py-4 md:py-5 rounded-2xl uppercase tracking-[0.25em] text-sm md:text-base font-semibold hover:bg-[#6a151d] transition-colors shadow-lg cursor-pointer">
                       Confirm Attendance
                     </button>
                   </form>
@@ -888,55 +919,54 @@ export default function App() {
           </section>
 
           {/* Section: Guestbook / Wishes */}
-          <section className="py-20 px-6 max-w-2xl mx-auto">
+          <section className="py-14 md:py-20 px-6 max-w-3xl mx-auto">
             <OrnateDivider />
             <div className="text-center mb-10">
-              <h2 className="text-3xl font-semibold text-[#333] mb-2 font-serif">Little Wishes</h2>
-              <p className="italic text-[#666]">Be the first to leave a little wish.</p>
+              <h2 className="text-3xl sm:text-4xl font-semibold text-[#333] mb-2 font-serif">Little Wishes</h2>
+              <p className="italic text-base md:text-lg text-[#666] font-serif">Be the first to leave a little wish for the couple.</p>
             </div>
 
-            <form onSubmit={handleWishSubmit} className="space-y-6 bg-white p-8 rounded-lg shadow-sm border border-[#EAE0D5]">
+            <form onSubmit={handleWishSubmit} className="space-y-6 bg-white p-8 md:p-12 rounded-3xl shadow-lg border border-[#EAE0D5]">
               <div>
-                <label className="block text-xs uppercase tracking-widest text-[#666] mb-2">Your Name</label>
+                <label className="block text-xs uppercase tracking-widest text-[#666] mb-2 font-semibold">Your Name</label>
                 <input 
                   type="text" required
-                  className="custom-input w-full"
+                  className="custom-input w-full text-lg py-2"
                   placeholder="Your name"
                   value={wishData.name}
                   onChange={(e) => setWishData({...wishData, name: e.target.value})}
                 />
               </div>
               <div>
-                <label className="block text-xs uppercase tracking-widest text-[#666] mb-2">Your Message</label>
+                <label className="block text-xs uppercase tracking-widest text-[#666] mb-2 font-semibold">Your Message</label>
                 <textarea 
                   required rows="3"
-                  className="custom-input w-full resize-none"
-                  placeholder="Write your wish..."
+                  className="custom-input w-full resize-none text-lg py-2"
+                  placeholder="Write your heartfelt blessing or wish..."
                   value={wishData.message}
                   onChange={(e) => setWishData({...wishData, message: e.target.value})}
                 ></textarea>
-                <div className="text-right text-[10px] text-[#888] mt-1">{wishData.message.length}/200</div>
+                <div className="text-right text-xs text-[#888] mt-1">{wishData.message.length}/200</div>
               </div>
-              <button type="submit" className="w-full bg-[#8B1E28]/90 text-white py-3 rounded uppercase tracking-[0.1em] text-sm hover:bg-[#8B1E28] transition-colors flex items-center justify-center">
-                Save Your Wish <Heart className="w-4 h-4 ml-2" />
+              <button type="submit" className="w-full bg-[#8B1E28]/95 text-white py-4 rounded-2xl uppercase tracking-[0.2em] text-sm md:text-base hover:bg-[#8B1E28] transition-colors flex items-center justify-center shadow-md cursor-pointer font-semibold">
+                <span>Save Your Wish</span> <Heart className="w-4 h-4 ml-2 fill-current" />
               </button>
             </form>
           </section>
 
           {/* Section: Thank You Footer */}
-          <footer className="bg-[#8B1E28] text-white py-24 px-6 text-center relative overflow-hidden">
-             {/* Gradient overlay for depth */}
+          <footer className="bg-[#8B1E28] text-white py-20 md:py-28 px-6 text-center relative overflow-hidden">
              <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
              
-             <div className="relative z-10 max-w-3xl mx-auto">
-                <p className="tracking-[0.3em] text-xs uppercase mb-8 text-[#EAE0D5]">Thank You</p>
-                <h2 className="font-script text-5xl md:text-7xl mb-6 text-shadow-sm">For being a part of our story.</h2>
-                <p className="font-serif italic text-lg md:text-xl text-[#EAE0D5] mb-16 max-w-xl mx-auto">
+             <div className="relative z-10 max-w-4xl mx-auto">
+                <p className="tracking-[0.3em] text-xs md:text-sm uppercase mb-6 text-[#EAE0D5] font-medium">Thank You</p>
+                <h2 className="font-script text-6xl sm:text-7xl md:text-8xl lg:text-9xl mb-6 text-shadow-sm">For being a part of our story.</h2>
+                <p className="font-serif italic text-lg sm:text-xl md:text-2xl text-[#EAE0D5] mb-12 max-w-2xl mx-auto">
                   We cannot wait to celebrate this beautiful beginning with you.
                 </p>
                 
-                <p className="tracking-[0.2em] text-xs uppercase mb-4 text-[#C4A47C]">With Love</p>
-                <p className="font-serif text-xl md:text-2xl tracking-wider">Rana & Bhatia Families</p>
+                <p className="tracking-[0.25em] text-xs md:text-sm uppercase mb-3 text-[#C4A47C] font-semibold">With Love</p>
+                <p className="font-serif text-2xl sm:text-3xl md:text-4xl tracking-wider">Rana &amp; Bhatia Families</p>
              </div>
           </footer>
 
