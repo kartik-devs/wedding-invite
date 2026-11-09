@@ -912,11 +912,11 @@ export default function App() {
                 
                 <div className="space-y-4">
                   <div className="flex items-center justify-between p-3.5 rounded-xl bg-white/70 border border-[#EAE0D5] hover:border-[#8B1E28]/40 transition-colors">
-                    <span className="text-lg md:text-xl font-serif text-[#333]">Sandh</span>
+                    <span className="text-lg md:text-xl font-serif text-[#333]">Sendh</span>
                     <span className="text-sm md:text-base font-semibold text-[#8B1E28] bg-[#8B1E28]/10 px-3.5 py-1 rounded-full font-sans">4:00 PM</span>
                   </div>
                   <div className="flex items-center justify-between p-3.5 rounded-xl bg-white/70 border border-[#EAE0D5] hover:border-[#8B1E28]/40 transition-colors">
-                    <span className="text-lg md:text-xl font-serif text-[#333]">Uptan</span>
+                    <span className="text-lg md:text-xl font-serif text-[#333]">Ubtan</span>
                     <span className="text-sm md:text-base font-semibold text-[#8B1E28] bg-[#8B1E28]/10 px-3.5 py-1 rounded-full font-sans">5:00 PM</span>
                   </div>
                   <div className="flex items-center justify-between p-3.5 rounded-xl bg-white/70 border border-[#EAE0D5] hover:border-[#8B1E28]/40 transition-colors">
@@ -1044,7 +1044,7 @@ export default function App() {
                           Events Attending <span className="text-[#888] font-normal lowercase">(click to select)</span>
                         </label>
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5">
-                          {['The Wedding', 'Sandh', 'Uptan', 'Kirtan', 'Lady Sangeet'].map(event => {
+                          {['The Wedding', 'Sendh', 'Ubtan', 'Kirtan', 'Lady Sangeet'].map(event => {
                             const isSelected = rsvpData.events.includes(event);
                             return (
                               <button
