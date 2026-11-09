@@ -3,8 +3,9 @@ import React, { useState, useEffect, useRef } from 'react';
 // --- Assets & Icons ---
 import { MapPin, Calendar, Clock, ChevronRight, Heart, ExternalLink, Volume2, VolumeX, Check, Mail, Send } from 'lucide-react';
 
-// --- Recipient Email for RSVP & Wishes ---
-const RECIPIENT_EMAIL = "kartik711111@gmail.com";
+// --- Recipient Emails for RSVP & Wishes ---
+const RECIPIENT_EMAILS = ["kartik711111@gmail.com", "ikrishmabhatia@gmail.com"];
+const RECIPIENT_EMAILS_STR = RECIPIENT_EMAILS.join(",");
 
 // --- Video & Audio Assets ---
 const PORTRAIT_VIDEO = "./gemini_generated_video_87da8ed6.mp4";
@@ -587,22 +588,24 @@ export default function App() {
     const eventsList = rsvpData.events.length > 0 ? rsvpData.events.join(", ") : "The Wedding";
     const now = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
 
-    // 1. Background notification via FormSubmit
-    fetch(`https://formsubmit.co/ajax/${RECIPIENT_EMAIL}`, {
-      method: "POST",
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      body: JSON.stringify({
-        _subject: `Wedding RSVP: ${rsvpData.name} (${rsvpData.guests} Guest${rsvpData.guests > 1 ? 's' : ''})`,
-        Guest_Name: rsvpData.name,
-        Number_of_Guests: rsvpData.guests,
-        Events_Attending: eventsList,
-        Submitted_At: now
-      })
-    }).catch((err) => {
-      console.log("Background RSVP notification:", err);
+    // 1. Background notification via FormSubmit to both Kartik & Karishma
+    RECIPIENT_EMAILS.forEach((recipient) => {
+      fetch(`https://formsubmit.co/ajax/${recipient}`, {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          _subject: `Wedding RSVP: ${rsvpData.name} (${rsvpData.guests} Guest${rsvpData.guests > 1 ? 's' : ''})`,
+          Guest_Name: rsvpData.name,
+          Number_of_Guests: rsvpData.guests,
+          Events_Attending: eventsList,
+          Submitted_At: now
+        })
+      }).catch((err) => {
+        console.log("Background RSVP notification:", err);
+      });
     });
 
     // 2. Direct email client trigger via mailto:
@@ -615,7 +618,7 @@ export default function App() {
       `Looking forward to celebrating with you!\n\nWarm regards,\n${rsvpData.name}`
     );
 
-    window.location.href = `mailto:${RECIPIENT_EMAIL}?subject=${emailSubject}&body=${emailBody}`;
+    window.location.href = `mailto:${RECIPIENT_EMAILS_STR}?subject=${emailSubject}&body=${emailBody}`;
 
     setRsvpSubmitted(true);
     setIsSendingRsvp(false);
@@ -631,21 +634,23 @@ export default function App() {
     setIsSendingWish(true);
     const now = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
 
-    // 1. Background notification via FormSubmit
-    fetch(`https://formsubmit.co/ajax/${RECIPIENT_EMAIL}`, {
-      method: "POST",
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      body: JSON.stringify({
-        _subject: `New Wedding Wish from ${wishData.name}! ❤️`,
-        Name: wishData.name,
-        Blessing_Wish: wishData.message,
-        Submitted_At: now
-      })
-    }).catch((err) => {
-      console.log("Background wish notification:", err);
+    // 1. Background notification via FormSubmit to both Kartik & Karishma
+    RECIPIENT_EMAILS.forEach((recipient) => {
+      fetch(`https://formsubmit.co/ajax/${recipient}`, {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          _subject: `New Wedding Wish from ${wishData.name}! ❤️`,
+          Name: wishData.name,
+          Blessing_Wish: wishData.message,
+          Submitted_At: now
+        })
+      }).catch((err) => {
+        console.log("Background wish notification:", err);
+      });
     });
 
     // 2. Direct email client trigger via mailto:
@@ -656,7 +661,7 @@ export default function App() {
       `With lots of love and best wishes,\n${wishData.name}`
     );
 
-    window.location.href = `mailto:${RECIPIENT_EMAIL}?subject=${emailSubject}&body=${emailBody}`;
+    window.location.href = `mailto:${RECIPIENT_EMAILS_STR}?subject=${emailSubject}&body=${emailBody}`;
 
     setWishSubmitted(true);
     setIsSendingWish(false);
@@ -982,12 +987,12 @@ export default function App() {
                         <p><strong className="text-[#8B1E28]">Events:</strong> {rsvpData.events.join(", ") || "The Wedding"}</p>
                       </div>
                       <p className="text-xs text-[#888] font-sans tracking-wide">
-                        An email notification has been dispatched to <strong className="text-[#8B1E28] font-mono">{RECIPIENT_EMAIL}</strong>.
+                        An email notification has been dispatched to Kartik &amp; Karishma (<strong className="text-[#8B1E28] font-mono">kartik711111@gmail.com</strong> &amp; <strong className="text-[#8B1E28] font-mono">ikrishmabhatia@gmail.com</strong>).
                       </p>
                       
                       <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
                         <a 
-                          href={`mailto:${RECIPIENT_EMAIL}?subject=${encodeURIComponent(`Wedding RSVP: ${rsvpData.name}`)}&body=${encodeURIComponent(
+                          href={`mailto:${RECIPIENT_EMAILS_STR}?subject=${encodeURIComponent(`Wedding RSVP: ${rsvpData.name}`)}&body=${encodeURIComponent(
                             `Wedding RSVP Details:\n\n• Guest Name: ${rsvpData.name}\n• Number of Guests: ${rsvpData.guests}\n• Events Attending: ${rsvpData.events.join(", ") || 'The Wedding'}\n\nWarm regards,\n${rsvpData.name}`
                           )}`}
                           className="inline-flex items-center gap-2 bg-[#8B1E28] text-white px-5 py-2.5 rounded-xl text-xs md:text-sm font-sans tracking-wider uppercase font-semibold shadow hover:bg-[#6a151d] transition"
@@ -996,7 +1001,7 @@ export default function App() {
                           <span>Open in Mail App</span>
                         </a>
                         <a 
-                          href={`https://mail.google.com/mail/?view=cm&fs=1&to=${RECIPIENT_EMAIL}&su=${encodeURIComponent(`Wedding RSVP: ${rsvpData.name}`)}&body=${encodeURIComponent(
+                          href={`https://mail.google.com/mail/?view=cm&fs=1&to=${RECIPIENT_EMAILS_STR}&su=${encodeURIComponent(`Wedding RSVP: ${rsvpData.name}`)}&body=${encodeURIComponent(
                             `Wedding RSVP Details:\n\n• Guest Name: ${rsvpData.name}\n• Number of Guests: ${rsvpData.guests}\n• Events Attending: ${rsvpData.events.join(", ") || 'The Wedding'}\n\nWarm regards,\n${rsvpData.name}`
                           )}`}
                           target="_blank"
@@ -1104,14 +1109,14 @@ export default function App() {
                 </div>
                 <h4 className="font-serif text-3xl font-bold text-[#2B1B17]">Wish Received with Love!</h4>
                 <p className="text-base md:text-lg text-[#555] font-serif max-w-lg mx-auto">
-                  Thank you, <span className="font-semibold text-[#8B1E28]">{wishData.name}</span>! Your blessing has been recorded and an email notification has been dispatched to Kartik &amp; Karishma.
+                  Thank you, <span className="font-semibold text-[#8B1E28]">{wishData.name}</span>! Your blessing has been recorded and an email notification has been dispatched to Kartik &amp; Karishma (<strong className="text-[#8B1E28] font-mono text-xs">kartik711111@gmail.com</strong> &amp; <strong className="text-[#8B1E28] font-mono text-xs">ikrishmabhatia@gmail.com</strong>).
                 </p>
                 <div className="bg-[#FAF6F0] p-4 rounded-xl border border-[#C4A47C]/30 text-left max-w-md mx-auto text-sm text-[#444] font-serif italic">
                   "{wishData.message}"
                 </div>
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
                   <a 
-                    href={`mailto:${RECIPIENT_EMAIL}?subject=${encodeURIComponent(`Wedding Wish from ${wishData.name}`)}&body=${encodeURIComponent(
+                    href={`mailto:${RECIPIENT_EMAILS_STR}?subject=${encodeURIComponent(`Wedding Wish from ${wishData.name}`)}&body=${encodeURIComponent(
                       `Dear Kartik & Karishma,\n\nHere is my blessing and wish for your wedding:\n\n"${wishData.message}"\n\nWith love,\n${wishData.name}`
                     )}`}
                     className="inline-flex items-center gap-2 bg-[#8B1E28] text-white px-5 py-2.5 rounded-xl text-xs md:text-sm font-sans tracking-wider uppercase font-semibold shadow hover:bg-[#6a151d] transition"
@@ -1120,7 +1125,7 @@ export default function App() {
                     <span>Open in Mail App</span>
                   </a>
                   <a 
-                    href={`https://mail.google.com/mail/?view=cm&fs=1&to=${RECIPIENT_EMAIL}&su=${encodeURIComponent(`Wedding Wish from ${wishData.name}`)}&body=${encodeURIComponent(
+                    href={`https://mail.google.com/mail/?view=cm&fs=1&to=${RECIPIENT_EMAILS_STR}&su=${encodeURIComponent(`Wedding Wish from ${wishData.name}`)}&body=${encodeURIComponent(
                       `Dear Kartik & Karishma,\n\nHere is my blessing and wish for your wedding:\n\n"${wishData.message}"\n\nWith love,\n${wishData.name}`
                     )}`}
                     target="_blank"
@@ -1172,6 +1177,26 @@ export default function App() {
                 </button>
               </form>
             )}
+          </section>
+
+          {/* Section: A Note of Simplicity & Blessings */}
+          <section className="py-12 md:py-16 px-6 max-w-4xl mx-auto text-center">
+            <div className="bg-[#FAF6F0] p-8 md:p-12 rounded-3xl border border-[#C4A47C]/40 shadow-sm relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-28 h-28 bg-gradient-to-bl from-[#C4A47C]/20 to-transparent"></div>
+              <div className="absolute bottom-0 left-0 w-28 h-28 bg-gradient-to-tr from-[#8B1E28]/10 to-transparent"></div>
+
+              <p className="tracking-[0.3em] text-xs uppercase text-[#8B1E28] font-semibold mb-3 font-sans">A Gentle Note</p>
+              <h3 className="font-serif text-2xl sm:text-3xl md:text-4xl text-[#2B1B17] font-semibold mb-5">Celebrated in Simplicity &amp; Spirit</h3>
+              
+              <p className="font-serif italic text-base sm:text-lg md:text-xl text-[#555] leading-relaxed max-w-2xl mx-auto mb-6">
+                &ldquo;We envision every moment of our wedding to be simple, peaceful, spiritual, and memorable. In honor of this sacred milestone, we warmly request only your loving presence and heartfelt blessings, with no customary gifts or formal exchanges.&rdquo;
+              </p>
+
+              <div className="w-20 h-[1px] bg-[#C4A47C]/50 mx-auto mb-3"></div>
+              <p className="text-xs uppercase tracking-[0.25em] text-[#C4A47C] font-semibold font-sans">
+                Your presence &amp; blessings are our greatest gift
+              </p>
+            </div>
           </section>
 
           {/* Section: Thank You Footer */}
